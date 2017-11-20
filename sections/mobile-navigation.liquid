@@ -1,0 +1,54 @@
+<nav class="shifter-navigation" data-section-id="{{ section.id }}" data-section-type="mobile-navigation">
+  <div class="search">
+    <form action="/search" method="get">
+      <input type="text" name="q" id="q" placeholder="{{ 'general.search.placeholder' | t }}" />
+    </form>           
+  </div>
+   
+  <ul id="accordion">    
+    {% for link in linklists[section.settings.main_nav].links %}
+    {% if linklists[link.handle] and linklists[link.handle].links.size > 0 %}
+    <li class="accordion-toggle">{{ link.title }}</li>
+    <div class="accordion-content">
+      <ul class="sub">
+        {% for l in linklists[link.handle].links %}
+        {% if linklists[l.handle] and linklists[l.handle].links.size > 0 %} 
+        <div class="accordion-toggle2">{{ l.title }}</div>
+        <div class="accordion-content2">
+          <ul class="sub">
+            {% for l in linklists[l.handle].links %}
+            <li><a href="{{ l.url }}">{{ l.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% else %}
+        <li><a href="{{ l.url }}">{{ l.title }}</a></li>
+        {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    {% else %}
+    <li>{{ link.title | link_to: link.url }}</li>
+    {% endif %}
+    {% endfor %}  
+  </ul>     
+</nav> 
+
+
+
+{% schema %}
+  {
+    "name": "Mobile navigation",
+    "settings": [
+	  {
+        "type": "header",
+        "content": "Navigation"
+      },
+      {
+        "type": "link_list",
+        "id": "main_nav",
+        "label": "Choose main menu"
+      }
+	]
+  }
+{% endschema %}

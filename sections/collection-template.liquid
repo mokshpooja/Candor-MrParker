@@ -1,0 +1,133 @@
+<div data-section-id="{{ section.id }}" id="collection-page-template">
+{% assign number = section.settings.products_per_page %}
+{% paginate collection.products by number %}
+  
+  <div id="collection-description" class="desktop-12 mobile-3">
+    <h1>{{ collection.title }}</h1>
+    {{ collection.description }}
+  </div>
+
+  <div class="clear"></div>
+  
+  {% unless section.settings.sidebar %}
+  <div id="full-width-filter" class="desktop-12 tablet-6 mobile-3">
+      {% for block in section.blocks %}
+      {% include 'filters' %}
+      {% endfor %}
+  </div>
+  {% endunless %}
+  
+{% if section.settings.sidebar %}
+{% include 'collection-sidebar' %}
+{% endif %}
+
+<div class="{% if section.settings.sidebar %}desktop-9 tablet-6{% else %}desktop-12 tablet-6{% endif %} mobile-3">
+  <div id="product-loop">
+    {% for product in collection.products %}
+    <div class="product-index {% if section.settings.products_per_row  == 2 %}desktop-6 tablet-half {% cycle ' first', ' last' %}{% elsif section.settings.products_per_row  == 3 %}desktop-4 tablet-2 {% cycle ' first', '', ' last' %}{% elsif section.settings.products_per_row == 4 %}desktop-3 tablet-half {% cycle ' first', '', '', ' last' %}{% endif %} mobile-half" data-alpha="{{ product.title }}" data-price="{{ product.price }}">   
+      {% include 'product-listing' %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% include 'pagination' %}
+
+{% endpaginate %}
+</div>
+
+
+{% schema %}
+{
+    "name": "Collection Page",
+	"max_blocks" : 6,
+    "settings": [
+      {
+        "type":      "range",
+        "id":        "products_per_row",
+        "min":       2,
+        "max":        4,
+        "step":       1,
+        "label":     "Products per row",
+        "default":   3
+      },
+      {
+        "type":      "range",
+        "id":        "products_per_page",
+        "min":       2,
+        "max":        50,
+        "step":       1,
+        "label":     "Products per page",
+        "default":   46
+      },
+      {
+        "type": "checkbox",
+        "id": "sidebar",
+        "label": "Show sidebar"
+      }   
+    ],
+   "blocks":[  
+      {  
+         "type":"menu",
+         "name":"Menu",
+         "settings":[  
+            {
+               "type": "link_list",
+               "id": "side_nav",
+               "label": "Sidebar menu"
+            },
+           {
+            "type": "text",
+            "id": "title",
+            "label": "Menu title",
+            "default": "Explore"
+           }
+         ]
+      },
+      {  
+         "type":"vendor_list",
+         "name":"Vendor list",
+		 "limit": 1,
+         "settings":[  
+          {
+          "type": "text",
+          "id": "shop_by_designer_title",
+          "label": "Vendor list title",
+          "default": "Shop by Designer"
+          }
+         ]
+      },
+      {  
+         "type":"sort_by",
+         "name":"Sort by",
+		 "limit": 1,
+         "settings":[  
+          {
+          "type": "text",
+          "id": "sort_by_title",
+          "label": "Sort by title",
+          "default": "Sort"
+          }
+         ]
+      },
+      {  
+         "type":"filter",
+         "name":"Filter",
+		 "limit": 3,
+         "settings":[  
+          {
+          "type": "text",
+          "id": "filter_by_title",
+          "label": "Filter by title",
+          "default": "Filter by"
+          },
+          {
+          "type": "textarea",
+          "id": "filter_by",
+          "label": "Tag filter"
+          }
+         ]
+      }
+   ]
+  }
+{% endschema %} 

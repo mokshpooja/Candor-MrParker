@@ -1,0 +1,99 @@
+<h2 class="desktop-12">{{ 'general.search.title' | t }}</h2>
+{% paginate search.results by 24 %}  	
+
+<div id="search-bar" class="desktop-12 mobile-3">
+  <form action="/search" method="get">
+    <p>{{ 'general.search.results_for_html' | t: terms: search.terms }}</p> 
+    <input type="text" name="q" id="q" placeholder="{{ 'general.search.placeholder' | t }}" />
+  </form>
+</div>
+
+{% if search.performed %}
+
+
+
+<div id="product-loop">
+  {% for item in search.results %} 
+  <div class="product-index desktop-3 mobile-half{% cycle ' first', '', '', ' last' %}" data-alpha="{{ collection.title }}">  
+
+    {% if item.object_type == 'article' %}
+    <!--'item' is an article All article object properties can be accessed. -->
+    {% if item.image %}
+    <div class="collection-image">
+      <a href="{{ item.url }}" title="{{ item.title | escape }}">
+        <img src="{{ item.image | img_url: 'grande' }}" alt="{{ item.title }}">
+      </a>
+    </div>
+    {% endif %}
+    {% elsif item.object_type == 'page' %}
+
+
+    <!--'item' is a page. All page object properties can be accessed. -->
+
+    {% if item.content contains "img" %}
+    {% assign feat_image = item.content | split: 'src="' %}
+    {% assign feat_image = feat_image[1] | split: '"' | first | replace: '//cdn', 'http://cdn' | replace: 'http:http://', 'http://' | remove: 'https:'  %}
+    <div class="collection-image">
+      <a href="{{ item.url }}" title="{{ item.title | escape }}">
+        <img src="{{ feat_image }}" alt="{{ item.title }}">
+      </a>
+    </div>
+    
+    {% else %}
+    <div class="search-content">
+    {{ item.content | strip_html | trancate: 200 }}
+    </div>
+    {% endif %}
+
+
+    {% else %}
+    {% if item.available %}
+    {% for col in item.collections %}
+    {% if col.handle == 'new' %}
+    <div class="new icn">{{ 'products.general.new' | t }}</div>
+    {% endif %}
+    {% endfor %}
+
+    {% if item.price < item.compare_at_price %}
+    <div class="sale-item icn">{{ 'products.general.sale' | t }}</div>
+    {% endif %}
+
+    {% else %}
+    <div class="so icn">{{ 'products.general.sold' | t }}</div>
+    {% endif %} 
+    <div class="collection-image">
+      <a href="{{ item.url }}" title="{{ item.title | escape }}">
+        {{ item.featured_image | img_url: 'grande' | img_tag: item.featured_image.alt }}
+      </a>
+    </div>
+    {% endif %}
+
+    <div class="product-info">
+      
+      <a href="{{ item.url }}"> 
+        {% if item.object_type == 'product' %} {% if settings.vendor %}<p>{{ item.vendor }}</p>{% endif %} {% endif %}
+        <div class="prod-title">{{ item.title }}</div>
+      </a>        
+      {% if item.object_type == 'product' %}
+      <div class="price">
+        {% if item.price < item.compare_at_price %}
+        <div class="onsale">{{ item.price | money }}</div>
+        <div class="was">{{ item.compare_at_price | money }}</div>
+        {% else %}
+        <div class="prod-price">{% if item.price_varies %} {{ 'products.general.from' | t }} {{ item.price_min | money }} - {{ item.price_max | money }} {% else %}{{ item.price | money }}{% endif %}</div>
+        {% endif %}	
+      </div>
+      {% endif %}      
+      
+    </div>
+
+   
+  </div>
+  {% endfor %}
+</div>
+
+{% include 'pagination' %}
+
+{% endif %}
+
+{% endpaginate %}

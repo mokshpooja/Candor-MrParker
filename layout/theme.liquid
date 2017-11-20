@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8" />
+  {% include 'google-fonts' %}
+  <!-- Meta
+================================================== -->
+  <title>
+    {{ page_title }}{% if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+  </title>
+  {% if page_description %}
+  <meta name="description" content="{{ page_description | escape }}" />
+  {% endif %}
+  <link rel="canonical" href="{{ canonical_url }}" />
+  {% include 'social-meta-tags' %}
+  <!-- CSS
+================================================== -->
+  {{ 'stylesheet.css' | asset_url | stylesheet_tag }}
+
+  <!-- ALFRED ADDED THIS -->
+  {{ "navbar2.scss" | asset_url | stylesheet_tag }}
+  <!-- JS
+================================================== -->
+  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  {{ 'theme.js' | asset_url | script_tag }}
+  {{ 'option_selection.js' | shopify_asset_url | script_tag }}
+  {% if template == 'index' %}
+  {{ 'jquery.instagram.js' | asset_url | script_tag }}
+  {% endif %}
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- Favicons
+================================================== -->
+  {% if settings.favicon %}
+  <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png" />
+  {% endif %}
+  {% if template contains 'customers' %}
+  {{ "shopify_common.js" | shopify_asset_url | script_tag }}
+  {{ "customer_area.js"  | shopify_asset_url | script_tag }}
+  {% endif %}
+  {{ content_for_header }}
+
+  <script type="text/javascript">
+    $(window).load(function() {
+      $('.collection-image').matchHeight();
+    });
+  </script>
+
+
+
+
+
+
+
+
+
+<!-- BeginWishyAddon --><script>  Shopify.wishy_btn_settings = {"btn_placer_element":null,"btn_margin_unit":"px","btn_margin_top":5,"btn_margin_left":5,"btn_margin_right":5,"btn_margin_bottom":5,"btn_width":"auto","btn_display":"block","btn_append":"before","btn_background_color":"#ffffff","btn_border_color":"#ffffff","btn_border_width":1,"btn_text":"♡ ","btn_color":"#df0606","heart_icon_margin_right":10,"heart_icon_margin_bottom":10,"heart_icon_margin_top":15,"heart_icon_margin_left":15,"heart_icon_location":"bottom-right"};  Shopify.cc_swim_button_css_json = "";  {% if customer %}  Shopify.customer_email = "{{ customer.email }}" ;  {% else %}  Shopify.customer_email = "" ;  {% endif %}</script><!-- EndWishyAddon -->
+</head>
+
+<body class="gridlock shifter shifter-left {% if template contains 'product' %}product{% elsif template contains 'collection' %}collection{% else %}{{ template }}{% endif %}">
+  {% section 'mobile-navigation' %}
+  {% include 'timber-cart' %}
+  <div class="shifter-page{% if settings.ajax_cart_method == 'drawer' %} is-moved-by-drawer{% endif %}" id="PageContainer">
+    {% section 'header' %}
+    <div id="content"{% if template != 'index' %} class="row"{% endif %}>
+      {% if settings.breadcrumb %}
+      {% include 'breadcrumb' %}
+      {% endif %}
+      {{ content_for_layout }}
+    </div>
+    {% section 'footer' %}
+    {% if settings.popup %}
+    {% include 'popup' %}
+    {% endif %}
+  </div>
+
+
+
+
+  {% if settings.ajax_cart_method == 'drawer' %}
+  {{ 'handlebars.min.js' | asset_url | script_tag }}
+  {% include 'ajax-cart-template' %}
+  {{ 'ajax-cart.js' | asset_url | script_tag }}
+  <script>
+    jQuery(function($) {
+      ajaxCart.init({
+        formSelector: '.product_form',
+        cartContainer: '#CartContainer',
+        addToCartSelector: '.AddtoCart',
+        cartCountSelector: '.cart-count',
+        cartCostSelector: '.CartCost',
+        moneyFormat: {{ shop.money_format | json }},
+        onToggleCallback: function(cart) {
+        {% if settings.show_multiple_currencies %}
+        Currency.convertAll(shopCurrency, Currency.currentCurrency);
+        jQuery('.selected-currency').text(Currency.currentCurrency);
+        {% endif %}
+      }
+     });
+    });
+    jQuery('body').on('ajaxCart.afterCartLoad', function(evt, cart) {
+      // Bind to 'ajaxCart.afterCartLoad' to run any javascript after the cart has loaded in the DOM
+      timber.RightDrawer.open();
+    });
+  </script>
+  {% endif %}
+    <script type="text/javascript">
+    //initiating jQuery
+    jQuery(function($) {
+      if ($(window).width() >= 741) {
+        $(document).ready( function() {
+          //enabling stickUp on the '.navbar-wrapper' class
+          $('.header-wrapper').stickUp();
+        });
+      }
+    });
+  </script>
+
+  {% include 'currencies' %}
+
+
+{% include 'social-login' %}</body>
+</html>
