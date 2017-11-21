@@ -1,0 +1,40 @@
+<a class="show" href="#">REFINE</a>
+
+<div class="clear"></div>
+
+<div id="sidebar" class="desktop-3 tablet-6 mobile-3">    
+  {% comment %}
+  Include block settings for collection template to add sidebar menus
+  {% endcomment %}
+
+  {% for block in section.blocks %}
+
+  {% if block.type == 'vendor_list' %}
+  {% if collection.handle == "all" %}
+  <ul>
+    <h4>{{ block.settings.shop_by_designer_title }}</h4>
+    {% for product_vendor in shop.vendors %}
+    <li>{{ product_vendor | link_to_vendor  }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <ul>
+    <label>{{ block.settings.shop_by_designer_title }}</label>
+    {% for product_vendor in collection.all_vendors %}
+    <li class="{{ product_vendor | handelize }}">{{ product_vendor | link_to_vendor }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% elsif block.type == 'menu' %}
+
+  <ul {{ block.shopify_attributes }}>
+    <h4>{{ block.settings.title }}</h4>
+    {% for link in linklists[block.settings.side_nav].links %}
+    <li>{{ link.title | link_to: link.url }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% include 'filters' %}
+  {% endfor %}
+</div>

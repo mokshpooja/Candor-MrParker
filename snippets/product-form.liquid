@@ -1,0 +1,77 @@
+<form action="/cart/add" method="post" data-money-format="{{ shop.money_format }}" data-product-id="{{ product.id }}" enctype="multipart/form-data" class="product_form{% if product.variants.size > 1 or product.options.size > 1 %} with_variants{% endif %}" id="AddToCartForm" data-product="{{ product | json | escape }}">
+  {% if product.options.size > 1 %}
+  <div class="select">
+    <select id="product-select-{{ product.id }}" name='id'>
+      {% for variant in product.variants %}
+      <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% if section.settings.product-variants == 'swatches' %}
+  {% for option in product.options %}
+  {% include 'swatch' with option %}
+  {% endfor %}
+  {% endif %}
+  {% elsif product.options.size == 1 and product.variants.size > 1 %}
+  <div class="select">
+    <select id="product-select-{{ product.id }}" name='id'>
+      {% for variant in product.variants %}
+      <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% if section.settings.product-variants == 'swatches' %}
+  {% for option in product.options %}
+  {% include 'swatch' with option %}
+  {% endfor %}
+  {% endif %}
+  {% else %}
+  <div class="what-is-it">
+    {% if product.options.first != 'Title' %}
+    <label>{{ product.options.first }}:</label>{% for variant in product.variants %}<span class="it-is">{{ variant.option1 | escape }}</span>{% endfor %}
+    {% endif %}
+  </div>
+  <div class="product-variants"></div><!-- product variants -->  
+  <input  type="hidden" id="{{ variant.id }}" name="id" data-sku="{{ variant.sku }}" value="{{ product.variants[0].id }}" />    
+  {% endif %}
+
+  {% if product.available %}
+  <div class="product-add">
+    {% if section.settings.show-quantity %}
+    <label for="quantity">{{ 'products.product.quantity' | t }}</label> 
+    <input min="1" type="number" id="quantity" name="quantity" value="1" />
+    {% endif %}
+  </div>
+  
+  <div class="wishy-placeholder"></div><!-- Wishlist button -->
+  <input type="submit" name="button" class="add clearfix AddtoCart" value="{{ 'products.product.add_to_cart' | t }}" />
+  {% endif %}
+</form> 
+
+{% if product.variants.size > 1 or product.options.size > 1 %}
+<script type="text/javascript">
+  $(function() {   
+    $product = $('#product-' + {{ product.id }});
+    new Shopify.OptionSelectors("product-select-{{ product.id }}", { product: {{ product | json }}, onVariantSelected:
+     selectCallback, enableHistoryState: true });
+  });    
+
+  $(document).on('shopify:section:load', function(event) {
+    new Shopify.OptionSelectors("product-select-{{ product.id }}", { product: {{ product | json }}, onVariantSelected:
+    selectCallback, enableHistoryState: true });
+    {% if section.settings.product-variants == 'swatches' %}
+    jQuery('.swatch :radio').change(function() {
+      var optionIndex = jQuery(this).closest('.swatch').attr('data-option-index');
+      var optionValue = jQuery(this).val();
+      jQuery(this)
+      .closest('form')
+      .find('.single-option-selector')
+      .eq(optionIndex)
+      .val(optionValue)
+      .trigger('change');
+    }); 
+    {% endif %}
+  });
+  
+</script>
+{% endif %}

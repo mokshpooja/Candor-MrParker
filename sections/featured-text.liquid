@@ -1,0 +1,81 @@
+<div class="index-section custom-section" data-section-id="{{ section.id }}" data-section-type="gallery-section">
+  <div class="row">
+    {% if section.settings.title != blank %}
+    <h2 class="sections"><span>{{ section.settings.title | escape }}</span></h2>
+    {% endif %}
+
+    <div class="pages-content_{{ section.id }}">
+      {% if section.settings.page != blank %}
+      {%- assign feat_page = pages[section.settings.page] -%}
+      {{ feat_page.content }}
+      {% else %}
+      <div class="rte">
+        {{ section.settings.rich-text }}
+      </div>
+      {% endif %}
+
+      {% if section.settings.page == blank and section.settings.rich-text == blank %}
+      <div class="content-onboard">
+        <p>Use this section to tell customers about your store or add content from one of your pages which makes it easy to add images, video or any other content</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+{% if section.settings.alignment == 'center' %}
+<style>
+  .pages-content_{{ section.id }}, .pages-content_{{ section.id }} .rte { 
+    text-align: center;
+  }
+</style>
+{% endif %}
+
+{% schema %}
+{   
+  "name": "Additional content",
+  "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Welcome"
+      },
+      {
+        "type": "richtext",
+        "id": "rich-text",
+        "label": "Text",
+        "info": "Use basic HTML to format text"
+      },
+      {
+        "type": "page",
+        "id": "page",
+        "label": "Or Show content from a page"
+      },
+      {  
+      "type":"select",
+      "id":"alignment",
+      "label":"Text alignment",
+      "default":"left",
+        "options":[  
+          {  
+          "value":"left",
+          "label":"Left"
+          },
+          {  
+          "value":"center",
+          "label":"Center"
+          }
+        ]
+      }
+   ],
+   "presets":[  
+      {  
+       "name":"Rich text",
+       "category":"Text"
+      }
+   ]
+}
+{% endschema %}
+

@@ -1,0 +1,88 @@
+<div class="index-section" data-section-id="{{ section.id }}" data-section-type="featured-blog-section">
+  <div id="homepage-blog" class="row">
+    {% if section.settings.title != blank %}
+    <h2 class="sections"><span>{{ section.settings.title | escape }}</span></h2>
+    {% endif %}
+    {%- assign blog = blogs[section.settings.blog] -%}
+    {%- assign post_limit = section.settings.post_limit -%}
+    {% assign published_at = article.published_at | date: format: 'month_date_year' %}
+    <ul id="featured-posts">
+      {% if blog == blank %}
+      {% include 'onboard-blog' %}
+      {% else %}
+      {% for article in blog.articles limit: post_limit %}
+      <li class="desktop-4 mobile-3{% cycle ' first', '', ' last' %}">
+        <a href="{{ article.url }}">
+          <h3 class="text-center">{{ article.title }}</h3>
+        </a>
+        {% if section.settings.show-date %}
+        {% assign published_at = article.published_at | date: format: 'month_date_year' %}
+        <p class="date text-center">{{ 'blogs.article.posted_on_date_html' | t: date: published_at }}</p> 
+        {% endif %}
+        <div class="homepage-excerpt"> 
+          {% if article.image %}<a href="{{ article.url }}"><img class="article-image" src="{{ article.image | img_url: '600x' }}" alt="{{ article.title }}"></a>{% endif %}
+          <div class="clear"></div>
+          {% if article.excerpt == blank %}
+          {{ article.content | strip_html | truncate: 90 }}
+          {% else %}
+          {{ article.excerpt }}
+          {% endif %}                                   
+        </div>
+        <div id="homepage-content">
+          <div class="text-left"><a href="{{ article.url }}">{{ 'blogs.article.read_more' | t }}</a>
+            {% if blog.comments_enabled? %}
+            <div class="text-right">
+              <a href="{{article.url}}#comments">{{ article.comments_count }} {{ 'blogs.article.comments' | t }}</a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </li>
+      {% endfor %}
+      {% endif %}
+    </ul>
+  </div>
+  <div class="clear"></div>
+</div>
+
+{% schema %}
+{
+  "name": "Blog posts",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Blog posts"
+    },
+    {
+      "id": "blog",
+      "type": "blog",
+      "label": "Blog"
+    },
+      {
+        "type":      "range",
+        "id":        "post_limit",
+        "min":       3,
+        "max":        12,
+        "step":       3,
+        "label":     "Posts",
+        "default":   3
+      },
+    {
+      "type": "checkbox",
+      "id": "show-date",
+      "label": "Show published date",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog posts",
+      "category": "Blog",
+      "settings": {
+      }
+    }
+  ]
+}
+{% endschema %}

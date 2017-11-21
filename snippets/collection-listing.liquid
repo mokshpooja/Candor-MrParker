@@ -1,0 +1,9 @@
+<h3 class="desktop-12 tablet-6 mobile-3">{{ 'collections.general.all_collections' | t }}</h3>
+
+<div id="collection-loop" style="width: 100%">
+  {% for collection in collections %}
+  <div class="product-index desktop-3 mobile-half{% cycle ' first', '', '', ' last' %}" data-alpha="{{ collection.title }}">     
+	{% include 'collection-grid-item' %}
+  </div>
+  {% endfor %}
+</div>

@@ -1,0 +1,71 @@
+<div class="collection-list-template" data-section-id="{{ section.id }}">
+  {% assign number = section.settings.collections_per_page %}
+  {% paginate collections by number %}
+
+  <div id="collection-description" class="desktop-12 mobile-3">
+    <h1>{{ 'collections.general.all_collections' | t }}</h1>
+
+    {%- assign image_size = '1600x' -%}    
+    {%- assign img_url = section.settings.image | img_url: image_size -%}
+    {% if section.settings.image != blank %}
+    <div class="collection-list-image">
+      <img src="{{ img_url }}">
+    </div>
+    {% endif %}
+    
+    {% if section.settings.text != blank %}
+    {{ section.settings.text }}
+    {% endif %}
+  </div>
+
+  <div class="clear"></div>
+
+  <div id="collection-loop" style="width: 100%">
+    {% for collection in collections %}
+    <div class="product-index {% if section.settings.collections_per_row  == 2 %}desktop-6{% cycle ' first', ' last' %}{% elsif section.settings.collections_per_row  == 3 %}desktop-4{% cycle ' first', '', ' last' %}{% elsif section.settings.collections_per_row == 4 %}desktop-3{% cycle ' first', '', '', ' last' %}{% endif %} tablet-half mobile-half" data-alpha="{{ collection.title }}">     
+      {% include 'collection-grid-item' %}
+    </div>
+    {% endfor %}
+  </div>
+  
+{% include 'pagination' %}
+{% endpaginate %}  
+</div>
+
+
+{% schema %}
+  {
+    "name": "Collection list",
+    "settings": [
+      {
+        "type":      "range",
+        "id":        "collections_per_row",
+        "min":       2,
+        "max":        4,
+        "step":       1,
+        "label":     "Collections per row",
+        "default":   3
+      },
+      {
+        "type":      "range",
+        "id":        "collections_per_page",
+        "min":       2,
+        "max":        50,
+        "step":       1,
+        "label":     "Collections per page",
+        "default":   46
+      },
+    {
+        "id": "text",
+        "type": "richtext",
+        "label": "Text",
+        "default": "<p>Add some descriptive text to your all collections page.</p>"
+     },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Add a banner image"
+        }
+	]
+  }
+{% endschema %}

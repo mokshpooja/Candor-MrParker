@@ -1,0 +1,50 @@
+<div class="index-section instagram-feed" data-section-id="{{ section.id }}" data-section-type="instagram">
+  <div id="follow-us" class="row">
+    {% if section.settings.title != blank %}
+    <h2 class="sections"><span>{{ section.settings.title | escape }}</span></h2>
+    {% endif %}
+
+  {% assign token = section.settings.instagram-access-token %}
+  {% capture userid %}
+  {{- token | truncate: 9, "" -}}
+  {% endcapture %}
+    
+    <div class="instagram-card">
+      
+      {% if section.settings.instagram-access-token != blank %}
+      <div id="instafeed-{{ section.id }}" data-access-token="{{ token }}"></div> 
+      {% else %}
+      
+      {% include 'onboard-instagram' %}
+      {% endif %}
+    
+    </div>
+  </div>
+</div>
+<div class="clear"></div>
+
+{% schema %}
+{
+	"name": "Instagram feed",
+	"settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Follow us on Instagram"
+    },
+      {
+          "type": "textarea",
+          "id": "instagram-access-token",
+          "label": "Instagram access token",
+      	  "info": "Required for permission to show your Instagram content [instructions here](http://support.undergroundmedia.co.uk/customer/en/portal/articles/2386318-home-page---instagram-feed) for setup."
+      }
+  ],
+  "presets": [
+    {
+      "name": "Instagram feed",
+      "category": "Instagram"
+    }
+  ]
+}
+{% endschema %}
